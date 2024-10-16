@@ -1,26 +1,27 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.9">
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        android:padding="32dp">
 
         <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <!-- Recipe name field -->
             <EditText
                 android:id="@+id/recipeName"
                 android:layout_width="match_parent"
@@ -29,19 +30,25 @@
                 android:hint="Recipe Name"
                 android:inputType="text" />
 
-            <EditText
-                android:id="@+id/recipeDescription"
+            <LinearLayout
+                android:id="@+id/ingredientsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:autofillHints="Recipe Description"
-                android:hint="Recipe Description"
-                android:inputType="text" />
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"></LinearLayout>
 
-
+            <Button
+                android:id="@+id/addIngredientButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add another ingredient"
+                android:layout_marginTop="16dp" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
+
+    </LinearLayout>
+
+    <!-- Submit button -->
     <ImageButton
         android:id="@+id/submitButton"
         android:layout_width="80dp"
