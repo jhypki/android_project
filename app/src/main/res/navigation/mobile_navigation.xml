@@ -28,10 +28,22 @@
         android:name="com.example.myapplication.ui.recipes.RecipesFragment"
         android:label="Recipes"
         tools:layout="@layout/fragment_recipes">
-        <!-- Add navigation action to AddRecipeFragment -->
+
+        <!-- Action to AddRecipeFragment -->
         <action
             android:id="@+id/action_recipesFragment_to_addRecipeFragment"
             app:destination="@id/addRecipeFragment" />
+
+        <!-- Action to RecipeDetailFragment -->
+        <action
+            android:id="@+id/action_recipesFragment_to_recipeDetailFragment"
+            app:destination="@id/recipeDetailFragment">
+            <!-- Passing the selected recipe index as an argument -->
+            <argument
+                android:name="recipeId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        </action>
     </fragment>
 
     <fragment
@@ -40,5 +52,10 @@
         android:label="Add Recipe"
         tools:layout="@layout/fragment_add_recipe" />
 
-
+    <!-- Recipe Detail Fragment where the recipe details will be displayed -->
+    <fragment
+        android:id="@+id/recipeDetailFragment"
+        android:name="com.example.myapplication.ui.recipes.RecipeDetailFragment"
+        android:label="Recipe Details"
+        tools:layout="@layout/fragment_recipe_detail" />
 </navigation>

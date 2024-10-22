@@ -10,15 +10,21 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.myapplication.databinding.FragmentAddRecipeBinding
 
 class AddRecipeFragment : Fragment() {
 
     private var _binding: FragmentAddRecipeBinding? = null
     private val binding get() = _binding!!
+    private val recipeViewModel: RecipeViewModel by activityViewModels()
+
     private var ingredientCount = 0
     private val unitsArray =
         listOf("grams", "kilograms", "ml", "liters", "cups", "teaspoons", "tablespoons")
+
+    private val ingredientRows = mutableListOf<LinearLayout>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,9 +37,15 @@ class AddRecipeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         addNewIngredientRow()
+
         binding.addIngredientButton.setOnClickListener {
             addNewIngredientRow()
+        }
+
+        binding.submitButton.setOnClickListener {
+            submitRecipe()
         }
     }
 
@@ -80,15 +92,35 @@ class AddRecipeFragment : Fragment() {
             text = "X"
             setOnClickListener {
                 binding.ingredientsContainer.removeView(ingredientRow)
+                ingredientRows.remove(ingredientRow)
                 ingredientCount--
             }
         }
-        
+
         ingredientRow.addView(ingredientName)
         ingredientRow.addView(ingredientQuantity)
         ingredientRow.addView(ingredientUnit)
         ingredientRow.addView(removeButton)
         binding.ingredientsContainer.addView(ingredientRow)
+        ingredientRows.add(ingredientRow)
+    }
+
+    private fun submitRecipe() {
+        val recipeName = binding.recipeName.text.toString()
+
+        if (recipeName.isNotEmpty()) {
+            val ingredients = ingredientRows.map { row ->
+                val ingredientName = (row.getChildAt(0) as EditText).text.toString()
+                val quantity = (row.getChildAt(1) as EditText).text.toString()
+                val unit = (row.getChildAt(2) as Spinner).selectedItem.toString()
+                Ingredient(ingredientName, quantity, unit)
+            }
+
+            val recipe = Recipe(recipeName, ingredients)
+            recipeViewModel.addRecipe(recipe)
+
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroyView() {
