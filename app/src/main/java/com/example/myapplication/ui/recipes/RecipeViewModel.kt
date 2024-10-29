@@ -1,17 +1,20 @@
 package com.example.myapplication.ui.recipes
-
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import com.example.myapplication.db.RecipeDao
+import com.example.myapplication.models.Recipe
+import com.example.myapplication.models.Ingredient
 
-class RecipeViewModel : ViewModel() {
+class RecipeViewModel(private val recipeDao: RecipeDao) : ViewModel() {
 
-    private val _recipes = MutableLiveData<MutableList<Recipe>>(mutableListOf())
-    val recipes: LiveData<MutableList<Recipe>> = _recipes
+    val recipes: LiveData<List<Recipe>> = recipeDao.getAllRecipes().asLiveData()
 
-    // Function to add a new recipe to the list
-    fun addRecipe(recipe: Recipe) {
-        _recipes.value?.add(recipe)
-        _recipes.value = _recipes.value // Trigger LiveData update
+    fun getIngredientsForRecipe(recipeId: Int): LiveData<List<Ingredient>> {
+        return recipeDao.getIngredientsForRecipe(recipeId).asLiveData()
+    }
+
+    fun getRecipeById(recipeId: Int): LiveData<Recipe?> {
+        return recipeDao.getRecipeById(recipeId).asLiveData()
     }
 }

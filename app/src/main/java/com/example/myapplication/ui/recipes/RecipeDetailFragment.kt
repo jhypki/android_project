@@ -8,13 +8,19 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.myapplication.databinding.FragmentRecipeDetailBinding
+import com.example.myapplication.db.RecipeDatabase
+import com.example.myapplication.ui.recipes.RecipeViewModel
+import com.example.myapplication.ui.recipes.RecipeViewModelFactory
 
 class RecipeDetailFragment : Fragment() {
 
     private var _binding: FragmentRecipeDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val recipeViewModel: RecipeViewModel by activityViewModels()
+    private val recipeViewModel: RecipeViewModel by activityViewModels {
+        val recipeDao = RecipeDatabase.getDatabase(requireContext()).recipeDao()
+        RecipeViewModelFactory(recipeDao)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,25 +34,18 @@ class RecipeDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Retrieve the passed recipeId from the arguments
-        val recipeId = arguments?.getInt("recipeId") ?: 0
+        // Get the recipeId from arguments
+        val recipeId = arguments?.getInt("recipeId") ?: return
 
-        // Fetch the selected recipe using the recipeId
-        recipeViewModel.recipes.value?.let { recipes ->
-            val selectedRecipe = recipes[recipeId]
+        // Observe the recipe details
+        recipeViewModel.getRecipeById(recipeId).observe(viewLifecycleOwner) { recipe ->
+            binding.recipeName.text = recipe?.name ?: "Recipe not found"
+        }
 
-            // Set the recipe name
-            binding.recipeName.text = selectedRecipe.name
-
-            // Display ingredients in a ListView
-            val ingredientDetails = selectedRecipe.ingredients.map {
-                "${it.name}: ${it.quantity} ${it.unit}"
-            }
-            val adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                ingredientDetails
-            )
+        // Observe the ingredients for the recipe
+        recipeViewModel.getIngredientsForRecipe(recipeId).observe(viewLifecycleOwner) { ingredients ->
+            val ingredientDetails = ingredients.map { "${it.name}: ${it.quantity} ${it.unit}" }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, ingredientDetails)
             binding.ingredientsListView.adapter = adapter
         }
     }

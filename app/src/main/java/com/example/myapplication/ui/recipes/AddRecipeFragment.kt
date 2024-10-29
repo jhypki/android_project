@@ -5,26 +5,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
+import android.widget.ImageButton
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAddRecipeBinding
+import kotlinx.coroutines.launch
+import com.example.myapplication.db.RecipeDatabase
+import com.example.myapplication.models.Recipe
+import com.example.myapplication.models.Ingredient
 
 class AddRecipeFragment : Fragment() {
 
     private var _binding: FragmentAddRecipeBinding? = null
     private val binding get() = _binding!!
-    private val recipeViewModel: RecipeViewModel by activityViewModels()
 
-    private var ingredientCount = 0
-    private val unitsArray =
-        listOf("grams", "kilograms", "ml", "liters", "cups", "teaspoons", "tablespoons")
-
-    private val ingredientRows = mutableListOf<LinearLayout>()
+    private val recipeDao by lazy {
+        RecipeDatabase.getDatabase(requireContext()).recipeDao()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,93 +39,75 @@ class AddRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        addNewIngredientRow()
+        binding.submitButton.setOnClickListener {
+            saveRecipe()
+        }
 
         binding.addIngredientButton.setOnClickListener {
-            addNewIngredientRow()
+            addIngredientRow()
         }
 
-        binding.submitButton.setOnClickListener {
-            submitRecipe()
-        }
     }
 
-    private fun addNewIngredientRow() {
-        ingredientCount++
-        val ingredientRow = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
-
-        val ingredientName = EditText(requireContext()).apply {
-            id = View.generateViewId()
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            hint = "Ingredient $ingredientCount"
-            inputType = android.text.InputType.TYPE_CLASS_TEXT
-        }
-
-        val ingredientQuantity = EditText(requireContext()).apply {
-            id = View.generateViewId()
-            layoutParams =
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f)
-            hint = "Qty"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-        }
-
-        val ingredientUnit = Spinner(requireContext()).apply {
-            id = View.generateViewId()
-            layoutParams =
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f)
-            adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                unitsArray
-            )
-        }
-
-        val removeButton = Button(requireContext()).apply {
-            id = View.generateViewId()
-            layoutParams =
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.5f)
-            text = "X"
-            setOnClickListener {
-                binding.ingredientsContainer.removeView(ingredientRow)
-                ingredientRows.remove(ingredientRow)
-                ingredientCount--
-            }
-        }
-
-        ingredientRow.addView(ingredientName)
-        ingredientRow.addView(ingredientQuantity)
-        ingredientRow.addView(ingredientUnit)
-        ingredientRow.addView(removeButton)
-        binding.ingredientsContainer.addView(ingredientRow)
-        ingredientRows.add(ingredientRow)
-    }
-
-    private fun submitRecipe() {
+    private fun saveRecipe() {
         val recipeName = binding.recipeName.text.toString()
 
         if (recipeName.isNotEmpty()) {
-            val ingredients = ingredientRows.map { row ->
-                val ingredientName = (row.getChildAt(0) as EditText).text.toString()
-                val quantity = (row.getChildAt(1) as EditText).text.toString()
-                val unit = (row.getChildAt(2) as Spinner).selectedItem.toString()
-                Ingredient(ingredientName, quantity, unit)
+            lifecycleScope.launch {
+                val recipeId = recipeDao.insertRecipe(Recipe(name = recipeName)).toInt()
+
+                val ingredients = mutableListOf<Ingredient>()
+                for (i in 0 until binding.ingredientsContainer.childCount) {
+                    val ingredientRow = binding.ingredientsContainer.getChildAt(i) as ViewGroup
+                    val ingredientName = ingredientRow.findViewById<EditText>(R.id.ingredientName).text.toString()
+                    val quantity = ingredientRow.findViewById<EditText>(R.id.ingredientQuantity).text.toString()
+                    val unit = ingredientRow.findViewById<Spinner>(R.id.unitSpinner).selectedItem.toString()
+
+                    if (ingredientName.isNotEmpty() && quantity.isNotEmpty()) {
+                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit))
+                    }
+                }
+
+                ingredients.forEach { ingredient ->
+                    recipeDao.insertIngredient(ingredient)
+                }
+
+                // Navigate back to RecipesFragment after saving
+                findNavController().navigate(R.id.navigation_recipes)
             }
-
-            val recipe = Recipe(recipeName, ingredients)
-            recipeViewModel.addRecipe(recipe)
-
-            findNavController().popBackStack()
         }
     }
+
+
+
+
+
+    private fun addIngredientRow() {
+        val ingredientRow = LayoutInflater.from(context).inflate(R.layout.ingredient_row, binding.ingredientsContainer, false) as ViewGroup
+
+        // Initialize the Spinner with units array
+        val unitSpinner = ingredientRow.findViewById<Spinner>(R.id.unitSpinner)
+        val unitsArray = resources.getStringArray(R.array.units_array)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, unitsArray)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        unitSpinner.adapter = adapter
+
+        // Set up delete button functionality
+        val deleteButton = ingredientRow.findViewById<ImageButton>(R.id.deleteIngredientButton)
+        deleteButton.setOnClickListener {
+            binding.ingredientsContainer.removeView(ingredientRow)
+        }
+
+        // Add the ingredientRow to ingredientsContainer
+        binding.ingredientsContainer.addView(ingredientRow)
+    }
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
+
