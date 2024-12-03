@@ -11,7 +11,7 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentRecipesBinding
-import com.example.myapplication.db.RecipeDatabase
+import com.example.myapplication.db.AppDatabase
 
 class RecipesFragment : Fragment() {
 
@@ -19,7 +19,8 @@ class RecipesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val recipeDao by lazy {
-        RecipeDatabase.getDatabase(requireContext()).recipeDao()
+//        RecipeDatabase.getDatabase(requireContext()).recipeDao()
+        AppDatabase.getDatabase(requireContext()).recipeDao()
     }
 
     override fun onCreateView(

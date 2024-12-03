@@ -15,4 +15,22 @@
         <item>teaspoons</item>
         <item>tablespoons</item>
     </string-array>
+
+    <string-array name="meal_types">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+    </string-array>
+    <string name="select_day">Select Day</string>
+    <string name="select_meal_type">Select Meal Type</string>
+    <string name="select_recipe">Select Recipe</string>
+    <string-array name="ingredient_categories">
+        <item>Vegetables</item>
+        <item>Fruits</item>
+        <item>Dairy</item>
+        <item>Meat</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>

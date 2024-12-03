@@ -8,9 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.myapplication.databinding.FragmentRecipeDetailBinding
-import com.example.myapplication.db.RecipeDatabase
-import com.example.myapplication.ui.recipes.RecipeViewModel
-import com.example.myapplication.ui.recipes.RecipeViewModelFactory
+import com.example.myapplication.db.AppDatabase
 
 class RecipeDetailFragment : Fragment() {
 
@@ -18,7 +16,7 @@ class RecipeDetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val recipeViewModel: RecipeViewModel by activityViewModels {
-        val recipeDao = RecipeDatabase.getDatabase(requireContext()).recipeDao()
+        val recipeDao = AppDatabase.getDatabase(requireContext()).recipeDao() // Updated database reference
         RecipeViewModelFactory(recipeDao)
     }
 

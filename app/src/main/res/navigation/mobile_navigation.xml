@@ -3,25 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
-
-    <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.myapplication.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.myapplication.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.myapplication.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+    app:startDestination="@+id/navigation_recipes">
 
     <fragment
         android:id="@+id/navigation_recipes"
@@ -29,16 +11,13 @@
         android:label="Recipes"
         tools:layout="@layout/fragment_recipes">
 
-        <!-- Action to AddRecipeFragment -->
         <action
             android:id="@+id/action_recipesFragment_to_addRecipeFragment"
             app:destination="@id/addRecipeFragment" />
 
-        <!-- Action to RecipeDetailFragment -->
         <action
             android:id="@+id/action_recipesFragment_to_recipeDetailFragment"
             app:destination="@id/recipeDetailFragment">
-            <!-- Passing the selected recipe index as an argument -->
             <argument
                 android:name="recipeId"
                 app:argType="integer"
@@ -52,10 +31,36 @@
         android:label="Add Recipe"
         tools:layout="@layout/fragment_add_recipe" />
 
-    <!-- Recipe Detail Fragment where the recipe details will be displayed -->
     <fragment
         android:id="@+id/recipeDetailFragment"
         android:name="com.example.myapplication.ui.recipes.RecipeDetailFragment"
         android:label="Recipe Details"
         tools:layout="@layout/fragment_recipe_detail" />
+
+    <fragment
+        android:id="@+id/mealPlannerFragment"
+        android:name="com.example.myapplication.ui.mealplanner.MealPlannerFragment"
+        android:label="Meal Planner"
+        tools:layout="@layout/fragment_meal_planner">
+        <action
+            android:id="@+id/action_mealPlannerToDayDetail"
+            app:destination="@id/dayDetailFragment">
+            <argument
+                android:name="date"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/dayDetailFragment"
+        android:name="com.example.myapplication.ui.mealplanner.DayDetailFragment"
+        android:label="Day Details"
+        tools:layout="@layout/fragment_day_detail" />
+
+    <fragment
+        android:id="@+id/shoppingListFragment"
+        android:name="com.example.myapplication.ui.shopping.ShoppingListFragment"
+        android:label="Shopping List"
+        tools:layout="@layout/fragment_shopping_list" />
+
 </navigation>

@@ -13,8 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAddRecipeBinding
+import com.example.myapplication.db.AppDatabase
 import kotlinx.coroutines.launch
-import com.example.myapplication.db.RecipeDatabase
 import com.example.myapplication.models.Recipe
 import com.example.myapplication.models.Ingredient
 
@@ -24,7 +24,7 @@ class AddRecipeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val recipeDao by lazy {
-        RecipeDatabase.getDatabase(requireContext()).recipeDao()
+        AppDatabase.getDatabase(requireContext()).recipeDao()
     }
 
     override fun onCreateView(
@@ -64,7 +64,7 @@ class AddRecipeFragment : Fragment() {
                     val unit = ingredientRow.findViewById<Spinner>(R.id.unitSpinner).selectedItem.toString()
 
                     if (ingredientName.isNotEmpty() && quantity.isNotEmpty()) {
-                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit))
+                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit, category = "Other"))
                     }
                 }
 
