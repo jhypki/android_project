@@ -48,6 +48,7 @@ class MealPlannerFragment : Fragment() {
             showDatePicker { selectedDate ->
                 AddMealDialog(selectedDate) { mealPlan ->
                     lifecycleScope.launch {
+
                         mealPlanDao.insertMealPlan(mealPlan)
                         Toast.makeText(requireContext(), "Meal added for $selectedDate", Toast.LENGTH_SHORT).show()
                         updateListView()
@@ -86,9 +87,9 @@ class MealPlannerFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                val selectedDate = dateFormat.format(calendar.time)
-                onDateSelected(selectedDate)
+                // Ensure month and day are two digits
+                val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+                onDateSelected(formattedDate)
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -96,6 +97,7 @@ class MealPlannerFragment : Fragment() {
         )
         datePickerDialog.show()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

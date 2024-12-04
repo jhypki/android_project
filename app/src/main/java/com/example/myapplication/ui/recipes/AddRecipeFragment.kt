@@ -62,9 +62,10 @@ class AddRecipeFragment : Fragment() {
                     val ingredientName = ingredientRow.findViewById<EditText>(R.id.ingredientName).text.toString()
                     val quantity = ingredientRow.findViewById<EditText>(R.id.ingredientQuantity).text.toString()
                     val unit = ingredientRow.findViewById<Spinner>(R.id.unitSpinner).selectedItem.toString()
+                    val category = ingredientRow.findViewById<Spinner>(R.id.categorySpinner).selectedItem.toString()
 
                     if (ingredientName.isNotEmpty() && quantity.isNotEmpty()) {
-                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit, category = "Other"))
+                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit, category = category))
                     }
                 }
 
@@ -82,15 +83,23 @@ class AddRecipeFragment : Fragment() {
 
 
 
+
     private fun addIngredientRow() {
         val ingredientRow = LayoutInflater.from(context).inflate(R.layout.ingredient_row, binding.ingredientsContainer, false) as ViewGroup
 
-        // Initialize the Spinner with units array
+        // Initialize the unit spinner
         val unitSpinner = ingredientRow.findViewById<Spinner>(R.id.unitSpinner)
         val unitsArray = resources.getStringArray(R.array.units_array)
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, unitsArray)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        unitSpinner.adapter = adapter
+        val unitAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, unitsArray)
+        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        unitSpinner.adapter = unitAdapter
+
+        // Initialize the category spinner
+        val categorySpinner = ingredientRow.findViewById<Spinner>(R.id.categorySpinner)
+        val categoriesArray = resources.getStringArray(R.array.ingredient_categories)
+        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoriesArray)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner.adapter = categoryAdapter
 
         // Set up delete button functionality
         val deleteButton = ingredientRow.findViewById<ImageButton>(R.id.deleteIngredientButton)
@@ -101,6 +110,7 @@ class AddRecipeFragment : Fragment() {
         // Add the ingredientRow to ingredientsContainer
         binding.ingredientsContainer.addView(ingredientRow)
     }
+
 
 
 

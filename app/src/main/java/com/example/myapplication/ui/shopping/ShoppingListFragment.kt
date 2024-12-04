@@ -32,7 +32,6 @@ class ShoppingListFragment : Fragment() {
     ): View {
         binding = FragmentShoppingListBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,22 +49,23 @@ class ShoppingListFragment : Fragment() {
 
         binding.shoppingListView.layoutManager = LinearLayoutManager(requireContext())
         binding.shoppingListView.adapter = shoppingListAdapter
+
+        shoppingListViewModel.getShoppingList().observe(viewLifecycleOwner) { items ->
+            val groupedItems = items.groupBy { it.category }
+            shoppingListAdapter.updateItems(groupedItems)
+        }
+
         binding.saveButton.setOnClickListener {
-            val itemsToSave = shoppingListAdapter.getItems() // Retrieve items from the adapter
+            val itemsToSave = shoppingListAdapter.getFlattenedItems()
             shoppingListViewModel.saveShoppingList(itemsToSave)
             Toast.makeText(requireContext(), "Shopping list saved to the database.", Toast.LENGTH_SHORT).show()
         }
 
         binding.addIngredientButton.setOnClickListener {
             AddIngredientDialog { ingredient ->
-                shoppingListViewModel.addIngredient(ingredient) // Save ingredient to the database
+                shoppingListViewModel.addIngredient(ingredient)
                 Toast.makeText(requireContext(), "${ingredient.name} added to shopping list.", Toast.LENGTH_SHORT).show()
             }.show(parentFragmentManager, "AddIngredientDialog")
-        }
-
-
-        shoppingListViewModel.getShoppingList().observe(viewLifecycleOwner) { items ->
-            shoppingListAdapter.updateItems(items)
         }
 
         binding.datePickerButton.setOnClickListener {
@@ -77,15 +77,15 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
-
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
-                val date = "$year-${month + 1}-$dayOfMonth"
-                selectedDates.add(date)
-                Toast.makeText(requireContext(), "Selected Date: $date", Toast.LENGTH_SHORT).show()
+                // Ensure month and day are two digits
+                val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+                selectedDates.add(formattedDate)
+                Toast.makeText(requireContext(), "Selected Date: $formattedDate", Toast.LENGTH_SHORT).show()
                 Log.d("ShoppingListFragment", "Selected Dates: $selectedDates")
             },
             calendar.get(Calendar.YEAR),
@@ -95,6 +95,7 @@ class ShoppingListFragment : Fragment() {
         datePicker.show()
     }
 
+
     private fun generateShoppingList(adapter: ShoppingListAdapter) {
         if (selectedDates.isEmpty()) {
             Toast.makeText(requireContext(), "Please select at least one date.", Toast.LENGTH_SHORT).show()
@@ -102,8 +103,7 @@ class ShoppingListFragment : Fragment() {
         }
 
         shoppingListViewModel.generateShoppingListForDates(selectedDates).observe(viewLifecycleOwner) { ingredientMap ->
-            val items = ingredientMap.values.flatten()
-            adapter.updateItems(items)
+            adapter.updateItems(ingredientMap)
             Toast.makeText(requireContext(), "Shopping list generated.", Toast.LENGTH_SHORT).show()
         }
     }

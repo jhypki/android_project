@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.shopping
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -12,6 +13,8 @@ import com.example.myapplication.models.ShoppingListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ShoppingListViewModel(
     private val mealPlanDao: MealPlanDao,
@@ -24,6 +27,7 @@ class ShoppingListViewModel(
             val ingredientMap = mutableMapOf<String, MutableList<ShoppingListItem>>()
             for (date in selectedDates) {
                 val meals = mealPlanDao.getMealsForDate(date).firstOrNull() ?: emptyList()
+
                 for (meal in meals) {
                     val ingredients = recipeDao.getIngredientsForRecipe(meal.recipeId).firstOrNull() ?: emptyList()
                     for (ingredient in ingredients) {
@@ -43,6 +47,7 @@ class ShoppingListViewModel(
             emit(ingredientMap)
         }
     }
+
 
 
     fun saveShoppingList(items: List<ShoppingListItem>) {

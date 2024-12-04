@@ -1,36 +1,51 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="8dp">
 
-    <EditText
-        android:id="@+id/ingredientName"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="Ingredient Name"
-        android:inputType="text" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
-    <EditText
-        android:id="@+id/ingredientQuantity"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="Quantity"
-        android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/ingredientName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Ingredient Name"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/ingredientQuantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Quantity"
+            android:inputType="numberDecimal" />
+
+        <Spinner
+            android:id="@+id/unitSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
 
     <Spinner
-        android:id="@+id/unitSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
 
     <ImageButton
         android:id="@+id/deleteIngredientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_delete"
-        android:contentDescription="Delete Ingredient"
-        android:padding="8dp"
+        android:contentDescription="Delete"
         android:background="?attr/selectableItemBackgroundBorderless" />
 </LinearLayout>
