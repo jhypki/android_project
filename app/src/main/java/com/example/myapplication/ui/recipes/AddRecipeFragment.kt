@@ -4,19 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentAddRecipeBinding
 import com.example.myapplication.db.AppDatabase
-import kotlinx.coroutines.launch
-import com.example.myapplication.models.Recipe
 import com.example.myapplication.models.Ingredient
+import com.example.myapplication.models.Recipe
+import kotlinx.coroutines.launch
 
 class AddRecipeFragment : Fragment() {
 
@@ -60,12 +57,33 @@ class AddRecipeFragment : Fragment() {
                 for (i in 0 until binding.ingredientsContainer.childCount) {
                     val ingredientRow = binding.ingredientsContainer.getChildAt(i) as ViewGroup
                     val ingredientName = ingredientRow.findViewById<EditText>(R.id.ingredientName).text.toString()
-                    val quantity = ingredientRow.findViewById<EditText>(R.id.ingredientQuantity).text.toString()
+                    val quantityStr = ingredientRow.findViewById<EditText>(R.id.ingredientQuantity).text.toString()
                     val unit = ingredientRow.findViewById<Spinner>(R.id.unitSpinner).selectedItem.toString()
                     val category = ingredientRow.findViewById<Spinner>(R.id.categorySpinner).selectedItem.toString()
+                    val proteinStr = ingredientRow.findViewById<EditText>(R.id.ingredientProtein).text.toString()
+                    val fatStr = ingredientRow.findViewById<EditText>(R.id.ingredientFat).text.toString()
+                    val carbsStr = ingredientRow.findViewById<EditText>(R.id.ingredientCarbohydrates).text.toString()
 
-                    if (ingredientName.isNotEmpty() && quantity.isNotEmpty()) {
-                        ingredients.add(Ingredient(recipeId = recipeId, name = ingredientName, quantity = quantity, unit = unit, category = category))
+                    if (ingredientName.isNotEmpty() && quantityStr.isNotEmpty()) {
+                        val quantity = quantityStr.toFloatOrNull() ?: 0f
+                        val protein = proteinStr.toFloatOrNull() ?: 0f
+                        val fat = fatStr.toFloatOrNull() ?: 0f
+                        val carbohydrates = carbsStr.toFloatOrNull() ?: 0f
+                        val calories = (protein * 4) + (fat * 9) + (carbohydrates * 4)
+
+                        ingredients.add(
+                            Ingredient(
+                                recipeId = recipeId,
+                                name = ingredientName,
+                                quantity = quantityStr,
+                                unit = unit,
+                                category = category,
+                                calories = calories,
+                                protein = protein,
+                                fat = fat,
+                                carbohydrates = carbohydrates
+                            )
+                        )
                     }
                 }
 
@@ -78,11 +96,6 @@ class AddRecipeFragment : Fragment() {
             }
         }
     }
-
-
-
-
-
 
     private fun addIngredientRow() {
         val ingredientRow = LayoutInflater.from(context).inflate(R.layout.ingredient_row, binding.ingredientsContainer, false) as ViewGroup
@@ -111,13 +124,8 @@ class AddRecipeFragment : Fragment() {
         binding.ingredientsContainer.addView(ingredientRow)
     }
 
-
-
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
-

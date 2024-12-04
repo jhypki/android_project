@@ -24,7 +24,6 @@ class AddIngredientDialog(
         val unitInput = view.findViewById<EditText>(R.id.editIngredientUnit)
         val categoryInput = view.findViewById<Spinner>(R.id.spinnerIngredientCategory)
 
-        // Configure the spinner (categories)
         val categories = resources.getStringArray(R.array.ingredient_categories)
         categoryInput.adapter = ArrayAdapter(
             requireContext(),

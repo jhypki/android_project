@@ -9,7 +9,7 @@ import com.example.myapplication.models.MealPlan
 import com.example.myapplication.models.Recipe
 import com.example.myapplication.models.ShoppingListItem
 
-@Database(entities = [Recipe::class, Ingredient::class, MealPlan::class, ShoppingListItem::class], version = 4) // Update version
+@Database(entities = [Recipe::class, Ingredient::class, MealPlan::class, ShoppingListItem::class], version = 5) // Update version
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recipeDao(): RecipeDao

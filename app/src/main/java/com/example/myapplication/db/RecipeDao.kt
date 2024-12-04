@@ -2,6 +2,7 @@ package com.example.myapplication.db
 
 import androidx.room.*
 import com.example.myapplication.models.Ingredient
+import com.example.myapplication.models.NutritionalValues
 import com.example.myapplication.models.Recipe
 import com.example.myapplication.models.RecipeWithIngredients
 import kotlinx.coroutines.flow.Flow
@@ -38,4 +39,15 @@ interface RecipeDao {
 
     @Query("SELECT name FROM recipes WHERE id = :recipeId")
     suspend fun getRecipeNameById(recipeId: Int): String
+
+    @Query("""
+    SELECT SUM(calories) AS totalCalories,
+           SUM(protein) AS totalProtein,
+           SUM(fat) AS totalFat,
+           SUM(carbohydrates) AS totalCarbohydrates
+    FROM ingredients
+    WHERE recipeId = :recipeId
+""")
+    suspend fun getNutritionalValues(recipeId: Int): NutritionalValues
+
 }
